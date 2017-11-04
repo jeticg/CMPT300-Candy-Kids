@@ -17,14 +17,14 @@ pthread_t* kids;
 pthread_t* factories;
 
 void* factory(void* threadId) {
-    long facId = (long)threadId;
-    printf("I am a factory, thread #%ld!\n", facId);
+    int facId = *(int*)threadId;
+    printf("I am a factory, #%d!\n", facId);
     pthread_exit(NULL);
 }
 
 void* kid(void* threadId) {
-    long kidId = (long)threadId;
-    printf("I am a kid, thread #%ld!\n", kidId);
+    int kidId = *(int*)threadId;
+    printf("I am a kid, #%d!\n", kidId);
     pthread_exit(NULL);
 }
 
@@ -64,17 +64,21 @@ int main(int argc, char *argv[]) {
 
     /* 2. Initialize modules */
     buffInit(5);
+    int* facIds = malloc(sizeof(int) * (unsigned int)numFac);
+    int* kidIds = malloc(sizeof(int) * (unsigned int)numKid);
     factories = malloc(sizeof(pthread_t) * (unsigned int)numFac);
     kids = malloc(sizeof(pthread_t) * (unsigned int)numKid);
     // 3. Launch candy-factory threads
     for(int i=0; i<numFac; i++) {
-        /* Create the thread */
-        pthread_create(&factories[i], NULL, factory, NULL);
+        /* Create the factory */
+        facIds[i] = i;
+        pthread_create(&factories[i], NULL, factory, (void *)&facIds[i]);
     }
     // 4. Launch kid threads
     for(int i=0; i<numKid; i++) {
-        /* Create the thread */
-        pthread_create(&kids[i], NULL, kid, NULL);
+        /* Create the kid */
+        kidIds[i] = i;
+        pthread_create(&kids[i], NULL, kid, (void *)&kidIds[i]);
     }
     // 5. Wait for requested time
     /* Sleep for the specified amount of time in milliseconds */
@@ -85,6 +89,8 @@ int main(int argc, char *argv[]) {
     // 9. Print statistics
     // 10. Cleanup any allocated memory
     buffFree();
+    free(facIds);
+    free(kidIds);
     free(kids);
     free(factories);
     pthread_exit(NULL);
