@@ -4,8 +4,10 @@
 #include <string.h>
 #include <stdbool.h>
 #include <unistd.h>
-#include <pthread.h>
 #include <signal.h>
+//     threads and locks
+#include <pthread.h>
+#include <fcntl.h>
 #include <semaphore.h>
 
 
