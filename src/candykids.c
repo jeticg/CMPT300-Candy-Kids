@@ -1,42 +1,38 @@
 // Include standard library
 #include <stdio.h>
-#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <unistd.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <pwd.h>
 #include <pthread.h>
 #include <signal.h>
-#include <ctype.h>
+
 
 // Include library
 #include "aux.h"
 #include "bbuff.h"
 
 // Global variables
-pthread_t tid;
-pthread_attr_t attr;
+pthread_t* kids;
+pthread_t* factories;
 
-void* factory(void* param) {
-    (void)param;
-    printf("I am a factory\n");
-    return NULL;
+void* factory(void* threadId) {
+    long facId = (long)threadId;
+    printf("I am a factory, thread #%ld!\n", facId);
+    pthread_exit(NULL);
 }
 
-void* kid(void* param) {
-    (void)param;
-    printf("I am a kid\n");
-    return NULL;
+void* kid(void* threadId) {
+    long kidId = (long)threadId;
+    printf("I am a kid, thread #%ld!\n", kidId);
+    pthread_exit(NULL);
 }
 
 int main(int argc, char *argv[]) {
     /*
         1. Extract arguments
     */
-    if( argc != 4 ) {
+    if(argc != 4) {
         printf("Error, must have 3 arguments\n\n");
         printf("Usage: ./candykids <#factories> <#kids> <#seconds>\n");
         return 1;
@@ -68,15 +64,17 @@ int main(int argc, char *argv[]) {
 
     /* 2. Initialize modules */
     buffInit(5);
+    factories = malloc(sizeof(pthread_t) * (unsigned int)numFac);
+    kids = malloc(sizeof(pthread_t) * (unsigned int)numKid);
     // 3. Launch candy-factory threads
     for(int i=0; i<numFac; i++) {
         /* Create the thread */
-        pthread_create(&tid, &attr, factory, NULL);
+        pthread_create(&factories[i], NULL, factory, NULL);
     }
     // 4. Launch kid threads
     for(int i=0; i<numKid; i++) {
         /* Create the thread */
-        pthread_create(&tid, &attr, kid, NULL);
+        pthread_create(&kids[i], NULL, kid, NULL);
     }
     // 5. Wait for requested time
     /* Sleep for the specified amount of time in milliseconds */
@@ -86,5 +84,9 @@ int main(int argc, char *argv[]) {
     // 8. Stop kid threads
     // 9. Print statistics
     // 10. Cleanup any allocated memory
+    buffFree();
+    free(kids);
+    free(factories);
+    pthread_exit(NULL);
     return 0;
 }
