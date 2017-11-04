@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <signal.h>
+#include <semaphore.h>
 
 
 // Include library
@@ -15,10 +16,14 @@
 // Global variables
 pthread_t* kids;
 pthread_t* factories;
+//     Locks!
+pthread_mutex_t mutex;
+sem_t *full, *empty;
 
 void* factory(void* threadId) {
     int facId = *(int*)threadId;
     printf("I am a factory, #%d!\n", facId);
+
     pthread_exit(NULL);
 }
 
@@ -63,11 +68,25 @@ int main(int argc, char *argv[]) {
 
 
     /*
-        2. Initialize modules
+        2. Initialise modules
     */
     #ifdef DEBUG
     printf("--DEBUG: Initialising\n");
     #endif
+    // Initialise Locks
+    if (pthread_mutex_init(&mutex, NULL) != 0) {
+        printf("\nError: mutex init failed\n");
+        return 1;
+    }
+    if ((full = sem_open("/CHICKEN_FULL", O_CREAT, 0644, 1))==SEM_FAILED) {
+        printf("\nError: semaphore init failed\n");
+        return 1;
+    }
+    if ((empty = sem_open("/CHICKEN_EMPTY", O_CREAT, 0644, 1))==SEM_FAILED) {
+        printf("\nError: semaphore init failed\n");
+        return 1;
+    }
+    // Initialise buffer and thread pointers
     buffInit(5);
     int* facIds = malloc(sizeof(int) * (unsigned int)numFac);
     int* kidIds = malloc(sizeof(int) * (unsigned int)numKid);
@@ -165,6 +184,11 @@ int main(int argc, char *argv[]) {
     #ifdef DEBUG
     printf("--DEBUG: Start cleaning up\n");
     #endif
+    // Get rid of the Locks
+    pthread_mutex_destroy(&mutex);
+    sem_close(full);
+    sem_close(empty);
+    // Cleanup buffer and other things.
     buffFree();
     pthread_exit(NULL);
     #ifdef DEBUG
