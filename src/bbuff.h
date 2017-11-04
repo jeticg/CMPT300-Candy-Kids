@@ -3,9 +3,11 @@
 
 #define BUFFER_SIZE 10
 
-void bbuff_init(void);
-void bbuff_blocking_insert(void* item);
-void* bbuff_blocking_extract(void);
-_Bool bbuff_is_empty(void);
+int buffInit(int size);
+void buffPush(int item);
+int buffPop();
+_Bool buffEmpty();
+_Bool buffFull();
+void buffFree();
 
 #endif

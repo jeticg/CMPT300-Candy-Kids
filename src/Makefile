@@ -18,7 +18,7 @@ debug: candykids
 %.o : %.c
 	$(CC) -c $(CCFLAGS) $<
 
-candykids: candykids.o aux.o
+candykids: candykids.o aux.o bbuff.o
 	$(CC) -o candykids *.o $(CCFLAGS)
 
 clean:
