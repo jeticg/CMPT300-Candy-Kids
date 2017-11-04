@@ -62,37 +62,113 @@ int main(int argc, char *argv[]) {
     #endif
 
 
-    /* 2. Initialize modules */
+    /*
+        2. Initialize modules
+    */
+    #ifdef DEBUG
+    printf("--DEBUG: Initialising\n");
+    #endif
     buffInit(5);
     int* facIds = malloc(sizeof(int) * (unsigned int)numFac);
     int* kidIds = malloc(sizeof(int) * (unsigned int)numKid);
     factories = malloc(sizeof(pthread_t) * (unsigned int)numFac);
     kids = malloc(sizeof(pthread_t) * (unsigned int)numKid);
-    // 3. Launch candy-factory threads
+    #ifdef DEBUG
+    printf("--DEBUG: Initialisation complete\n");
+    #endif
+
+    /*
+        3. Launch candy-factory threads
+    */
+    #ifdef DEBUG
+    printf("--DEBUG: Creating factories\n");
+    #endif
     for(int i=0; i<numFac; i++) {
         /* Create the factory */
         facIds[i] = i;
         pthread_create(&factories[i], NULL, factory, (void *)&facIds[i]);
     }
-    // 4. Launch kid threads
+    #ifdef DEBUG
+    printf("--DEBUG: Factories created\n");
+    #endif
+
+    /*
+        4. Launch kid threads
+    */
+    #ifdef DEBUG
+    printf("--DEBUG: Creating kids\n");
+    #endif
     for(int i=0; i<numKid; i++) {
         /* Create the kid */
         kidIds[i] = i;
         pthread_create(&kids[i], NULL, kid, (void *)&kidIds[i]);
     }
-    // 5. Wait for requested time
-    /* Sleep for the specified amount of time in milliseconds */
+    #ifdef DEBUG
+    printf("--DEBUG: Kids created\n");
+    #endif
+
+    /*
+        5. Wait for requested time
+    */
+    #ifdef DEBUG
+    printf("--DEBUG: Main thread sleeping\n");
+    #endif
     sleep((unsigned int)numSec);
-    // 6. Stop candy-factory threads
-    // 7. Wait until no more candy
-    // 8. Stop kid threads
-    // 9. Print statistics
-    // 10. Cleanup any allocated memory
-    buffFree();
+    #ifdef DEBUG
+    printf("--DEBUG: Main thread awaking\n");
+    #endif
+
+    /*
+        6. Stop candy-factory threads
+    */
+    #ifdef DEBUG
+    printf("--DEBUG: Stopping facotries\n");
+    #endif
+    for(int i=0; i<numFac; i++) {
+        // stop the factories
+        pthread_cancel(factories[i]);
+    }
+    #ifdef DEBUG
+    printf("--DEBUG: Releasing factories and facIds memory\n");
+    #endif
     free(facIds);
+    free(factories);
+    #ifdef DEBUG
+    printf("--DEBUG: Factories stopped\n");
+    #endif
+
+    /*
+        7. Wait until no more candy
+    */
+
+    /*
+        8. Stop kid threads
+    */
+    #ifdef DEBUG
+    printf("--DEBUG: Stopping kids\n");
+    #endif
+    for(int i=0; i<numKid; i++) {
+        // stop the kids
+        pthread_cancel(kids[i]);
+    }
+    #ifdef DEBUG
+    printf("--DEBUG: Releasing kids and kidIds memory\n");
+    #endif
     free(kidIds);
     free(kids);
-    free(factories);
+    #ifdef DEBUG
+    printf("--DEBUG: Kids stopped\n");
+    #endif
+
+    // 9. Print statistics
+    // 10. Cleanup any allocated memory
+    #ifdef DEBUG
+    printf("--DEBUG: Start cleaning up\n");
+    #endif
+    buffFree();
     pthread_exit(NULL);
+    #ifdef DEBUG
+    printf("--DEBUG: Cleanup complete, Programme exits\n");
+    #endif
     return 0;
 }
