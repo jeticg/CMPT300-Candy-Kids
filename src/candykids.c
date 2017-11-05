@@ -87,11 +87,6 @@ int main(int argc, char *argv[]) {
     // Check if all input meets requirements
     for (int i=1; i<argc; i++) {
         if (isNumber(argv[i]) == 0) {
-            printf("Error, arguments must be numbers\n\n");
-            printf("Usage: ./candykids <#factories> <#kids> <#seconds>\n");
-            return 1;
-        }
-        if (convertToNumber(argv[i]) <= 0) {
             printf("Error, arguments must be positive integers\n\n");
             printf("Usage: ./candykids <#factories> <#kids> <#seconds>\n");
             return 1;

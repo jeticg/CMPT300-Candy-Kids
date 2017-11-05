@@ -17,7 +17,9 @@ int buffInit(int size) {
     full = 0;
     top = 0;
     empty = size;
-    printf("BUFF: top: %d, full: %d, empty: %d\n", top, full, empty);
+    #ifdef DEBUG
+    printf("--DEBUG: BUFF: top: %d, full: %d, empty: %d\n", top, full, empty);
+    #endif
     if (bbuff == NULL)
         // This means an error has occured
         return 1;
@@ -25,21 +27,29 @@ int buffInit(int size) {
 }
 
 void buffPush(int item) {
-    printf("BUFF: top: %d, full: %d, empty: %d\n", top, full, empty);
+    #ifdef DEBUG
+    printf("--DEBUG: BUFF: top: %d, full: %d, empty: %d\n", top, full, empty);
+    #endif
     bbuff[(top + full) % (empty + full)] = item;
     full += 1;
     empty -= 1;
-    printf("BUFF: top: %d, full: %d, empty: %d\n", top, full, empty);
+    #ifdef DEBUG
+    printf("--DEBUG: BUFF: top: %d, full: %d, empty: %d\n", top, full, empty);
+    #endif
     return;
 }
 
 int buffPop() {
-    printf("BUFF: top: %d, full: %d, empty: %d\n", top, full, empty);
+    #ifdef DEBUG
+    printf("--DEBUG: BUFF: top: %d, full: %d, empty: %d\n", top, full, empty);
+    #endif
     int result = bbuff[top];
     top = (top + 1) % (full + empty);
     full -= 1;
     empty += 1;
-    printf("BUFF: top: %d, full: %d, empty: %d\n", top, full, empty);
+    #ifdef DEBUG
+    printf("--DEBUG: BUFF: top: %d, full: %d, empty: %d\n", top, full, empty);
+    #endif
     return result;
 }
 
