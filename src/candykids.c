@@ -224,7 +224,6 @@ int main(int argc, char *argv[]) {
     sem_destroy(&empty);
     // Cleanup buffer and other things.
     buffFree();
-    pthread_exit(NULL);
     #ifdef DEBUG
     printf("--DEBUG: Cleanup complete, Programme exits\n");
     #endif
