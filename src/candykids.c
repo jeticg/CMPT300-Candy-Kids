@@ -34,13 +34,13 @@ void* factory(void* threadId) {
         candy = rand();
 
         // Put the candy into buffer
-        sem_wait(empty);
+        sem_wait(&empty);
         pthread_mutex_lock(&mutex);
         // Achtung, kritische Abteilung!!!
         buffPush(candy);
         printf("\tFactory %d ships candy %d & waits %ds\n", facId, candy, napTime);
         pthread_mutex_unlock(&mutex);
-        sem_post(full);
+        sem_post(&full);
 
         // nap time
         sleep(napTime);
@@ -58,13 +58,13 @@ void* kid(void* threadId) {
         unsigned int napTime = (unsigned int)rand() % 2;  // Either 0 or 1
 
         // eat the candy
-        sem_wait(full);
+        sem_wait(&full);
         pthread_mutex_lock(&mutex);
         // Achtung, kritische Abteilung!!!
         candy = buffPop();
         printf("\tKid %d eats candy %d & waits %ds\n", kidId, candy, napTime);
         pthread_mutex_unlock(&mutex);
-        sem_post(empty);
+        sem_post(&empty);
 
         // nap time
         sleep(napTime);
