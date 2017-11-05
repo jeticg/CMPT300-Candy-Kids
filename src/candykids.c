@@ -20,7 +20,7 @@ pthread_t* kids;
 pthread_t* factories;
 //     Locks!
 pthread_mutex_t mutex;
-sem_t full, empty;
+sem_t fullLock, emptyLock;
 //     Factory Status
 int factoryRuns;
 
@@ -36,13 +36,13 @@ void* factory(void* threadId) {
         candy = rand();
 
         // Put the candy into buffer
-        sem_wait(&empty);
+        sem_wait(&emptyLock);
         pthread_mutex_lock(&mutex);
         // Achtung, kritische Abteilung!!!
         buffPush(candy);
         printf("\tFactory %d ships candy %d & waits %ds\n", facId, candy, napTime);
         pthread_mutex_unlock(&mutex);
-        sem_post(&full);
+        sem_post(&fullLock);
 
         // nap time
         sleep(napTime);
@@ -60,13 +60,13 @@ void* kid(void* threadId) {
         unsigned int napTime = (unsigned int)rand() % 2;  // Either 0 or 1
 
         // eat the candy
-        sem_wait(&full);
+        sem_wait(&fullLock);
         pthread_mutex_lock(&mutex);
         // Achtung, kritische Abteilung!!!
         candy = buffPop();
         printf("\tKid %d eats candy %d & waits %ds\n", kidId, candy, napTime);
         pthread_mutex_unlock(&mutex);
-        sem_post(&empty);
+        sem_post(&emptyLock);
 
         // nap time
         sleep(napTime);
@@ -120,8 +120,8 @@ int main(int argc, char *argv[]) {
         printf("\nError: mutex init failed\n");
         return 1;
     }
-    sem_init(&full, 0, 0);
-    sem_init(&empty, 0, BUFFER_SIZE);
+    sem_init(&fullLock, 0, 0);
+    sem_init(&emptyLock, 0, BUFFER_SIZE);
     // Initialise buffer and thread pointers
     if (buffInit(BUFFER_SIZE) != 0) {
         return 1;
@@ -234,8 +234,8 @@ int main(int argc, char *argv[]) {
     #endif
     // Get rid of the Locks
     pthread_mutex_destroy(&mutex);
-    sem_destroy(&full);
-    sem_destroy(&empty);
+    sem_destroy(&fullLock);
+    sem_destroy(&emptyLock);
     // Cleanup buffer and other things.
     buffFree();
     #ifdef DEBUG
