@@ -14,6 +14,7 @@
 // Include library
 #include "aux.h"
 #include "bbuff.h"
+#include "stats.h"
 
 // Global variables
 pthread_t* kids;
@@ -33,13 +34,14 @@ void* factory(void* threadId) {
         unsigned int napTime = (unsigned int)rand() % 4;  // Either 0 or 1 or 2 or 3
 
         // Generate candy
-        candy = rand();
+        candy = encodeCandy(facId);
 
         // Put the candy into buffer
         sem_wait(&emptyLock);
         pthread_mutex_lock(&mutex);
         // Achtung, kritische Abteilung!!!
         buffPush(candy);
+        statsAdd(facId);
         printf("\tFactory %d ships candy %d & waits %ds\n", facId, candy, napTime);
         pthread_mutex_unlock(&mutex);
         sem_post(&fullLock);
@@ -55,7 +57,8 @@ void* factory(void* threadId) {
 void* kid(void* threadId) {
     int kidId = *(int*)threadId;
 
-    int candy;
+    int facId;
+    double zeit;
     while (true) {
         unsigned int napTime = (unsigned int)rand() % 2;  // Either 0 or 1
 
@@ -63,7 +66,8 @@ void* kid(void* threadId) {
         sem_wait(&fullLock);
         pthread_mutex_lock(&mutex);
         // Achtung, kritische Abteilung!!!
-        candy = buffPop();
+        decodeCandy(buffPop(), &facId, &zeit);
+        statsDel(facId, zeit);
         printf("\tKid %d eats candy %d & waits %ds\n", kidId, candy, napTime);
         pthread_mutex_unlock(&mutex);
         sem_post(&emptyLock);

@@ -5,4 +5,6 @@
 int isNumber(const char *s);
 int convertToNumber(const char *s);
 
+int encodeCandy(int facId);
+void decodeCandy(int candyId, int *facId, double *zeit);
 #endif

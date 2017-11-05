@@ -50,7 +50,7 @@ debug: candykids
 %.o : %.c
 	$(CC) -c $(CCFLAGS) $<
 
-candykids: candykids.o aux.o bbuff.o
+candykids: candykids.o aux.o bbuff.o stats.o
 	$(CC) -o candykids *.o $(CCFLAGS)
 
 clean:
