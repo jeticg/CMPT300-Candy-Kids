@@ -28,6 +28,7 @@ void buffPush(int item) {
     bbuff[(top + full) % (empty + full)] = item;
     full += 1;
     empty -= 1;
+    printf("BUFF: top: %d, full: %d, empty: %d\n", top, full, empty);
     return;
 }
 
@@ -37,6 +38,7 @@ int buffPop() {
     top = (top + 1) % (full + empty);
     full -= 1;
     empty += 1;
+    printf("BUFF: top: %d, full: %d, empty: %d\n", top, full, empty);
     return result;
 }
 
