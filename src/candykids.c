@@ -199,7 +199,7 @@ int main(int argc, char *argv[]) {
     /*
         7. Wait until no more candy
     */
-
+    while (!buffEmpty());
     /*
         8. Stop kid threads
     */
@@ -208,7 +208,7 @@ int main(int argc, char *argv[]) {
     #endif
     for(int i=0; i<numKid; i++) {
         // stop the kids
-        pthread_cancel(kids[i]);
+        pthread_join(kids[i], NULL);
     }
     #ifdef DEBUG
     printf("--DEBUG: Releasing kids and kidIds memory\n");
