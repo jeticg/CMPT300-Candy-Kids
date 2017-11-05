@@ -19,7 +19,7 @@ else
 	UNAME_S := $(shell uname -s)
 	ifeq ($(UNAME_S),Linux)
 		OSFLAG += -D LINUX
-		CCFLAGS += -pthread
+		CCFLAGS += -pthread -lrt
 	endif
 	ifeq ($(UNAME_S),Darwin)
 		OSFLAG += -D OSX

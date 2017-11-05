@@ -53,10 +53,10 @@ void statsDel(int facId, double zeit) {
 void statsPrint() {
     if (RecordBook == NULL) return;
     printf("Statistics:\n");
-    printf("\t Factory# \t #Made \t #Eaten \t Min_Delay(ms) \t Max_Delay(ms)");
+    printf("   Factory# \t #Made \t #Eaten \t Min_Delay(ms) \t Max_Delay(ms)");
     printf(" \t Avg_Delay(ms)\n");
     for (int i=0; i<RecordBookSize; i++)
-        printf("\t %8d \t %5d \t %5d \t %10.5f \t %10.5f \t %10.5f\n",
+        printf("    %6d \t %4d \t %5d  \t  %10.5f \t  %10.5f \t  %10.5f\n",
                i, RecordBook[i].in, RecordBook[i].out,
                RecordBook[i].minTime, RecordBook[i].maxTime,
                RecordBook[i].totalTime/RecordBook[i].out);
