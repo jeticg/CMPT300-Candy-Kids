@@ -185,7 +185,7 @@ int main(int argc, char *argv[]) {
     factoryRuns = 0;
     for(int i=0; i<numFac; i++) {
         // stop the factories
-        pthread_join(factories[i]);
+        pthread_join(factories[i], NULL);
     }
     #ifdef DEBUG
     printf("--DEBUG: Releasing factories and facIds memory\n");
