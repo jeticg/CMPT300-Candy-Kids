@@ -20,7 +20,7 @@ pthread_t* kids;
 pthread_t* factories;
 //     Locks!
 pthread_mutex_t mutex;
-sem_t *full, *empty;
+sem_t full, empty;
 
 void* factory(void* threadId) {
     int facId = *(int*)threadId;
@@ -28,7 +28,7 @@ void* factory(void* threadId) {
 
     int candy;
     while (true) {
-        unsigned int napTime = rand() % 4;  // Either 0 or 1 or 2 or 3
+        unsigned int napTime = (unsigned int)rand() % 4;  // Either 0 or 1 or 2 or 3
 
         // Generate candy
         candy = rand();
@@ -55,7 +55,7 @@ void* kid(void* threadId) {
 
     int candy;
     while (true) {
-        unsigned int napTime = rand() % 2;  // Either 0 or 1
+        unsigned int napTime = (unsigned int)rand() % 2;  // Either 0 or 1
 
         // eat the candy
         sem_wait(full);
@@ -118,16 +118,8 @@ int main(int argc, char *argv[]) {
         printf("\nError: mutex init failed\n");
         return 1;
     }
-    if ((full = sem_open("/CHICKEN_FULL", O_CREAT, 0644, 0))==SEM_FAILED) {
-        printf("\nError: semaphore init failed\n");
-        return 1;
-    }
-    sem_unlink("/CHICKEN_FULL");
-    if ((empty = sem_open("/CHICKEN_EMPTY", O_CREAT, 0644, BUFFER_SIZE))==SEM_FAILED) {
-        printf("\nError: semaphore init failed\n");
-        return 1;
-    }
-    sem_unlink("/CHICKEN_EMPTY");
+    sem_init(&full, 0, 0);
+    sem_init(&empty, 0, BUFFER_SIZE);
     // Initialise buffer and thread pointers
     if (buffInit(BUFFER_SIZE) != 0) {
         return 1;
@@ -230,8 +222,8 @@ int main(int argc, char *argv[]) {
     #endif
     // Get rid of the Locks
     pthread_mutex_destroy(&mutex);
-    sem_close(full);
-    sem_close(empty);
+    sem_destroy(full);
+    sem_destroy(empty);
     // Cleanup buffer and other things.
     buffFree();
     pthread_exit(NULL);
