@@ -222,8 +222,8 @@ int main(int argc, char *argv[]) {
     #endif
     // Get rid of the Locks
     pthread_mutex_destroy(&mutex);
-    sem_destroy(full);
-    sem_destroy(empty);
+    sem_destroy(&full);
+    sem_destroy(&empty);
     // Cleanup buffer and other things.
     buffFree();
     pthread_exit(NULL);
