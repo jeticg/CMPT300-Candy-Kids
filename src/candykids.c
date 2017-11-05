@@ -24,7 +24,6 @@ sem_t full, empty;
 
 void* factory(void* threadId) {
     int facId = *(int*)threadId;
-    printf("I am a factory, #%d!\n", facId);
 
     int candy;
     while (true) {
@@ -51,7 +50,6 @@ void* factory(void* threadId) {
 
 void* kid(void* threadId) {
     int kidId = *(int*)threadId;
-    printf("I am a kid, #%d!\n", kidId);
 
     int candy;
     while (true) {
