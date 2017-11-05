@@ -29,7 +29,7 @@ void* factory(void* threadId) {
     int facId = *(int*)threadId;
     printf("Candy-factory %d Open for business!\n", facId);
 
-    int candy;
+    CANDY candy;
     while (factoryRuns == 1) {
         unsigned int napTime = (unsigned int)rand() % 4;  // Either 0 or 1 or 2 or 3
 
@@ -42,7 +42,8 @@ void* factory(void* threadId) {
         // Achtung, kritische Abteilung!!!
         buffPush(candy);
         statsAdd(facId);
-        printf("\tFactory %d ships candy %d & waits %ds\n", facId, candy, napTime);
+        printf("\tFactory %d ships candy %d & waits %ds\n",
+               facId, candy.candyId, napTime);
         pthread_mutex_unlock(&mutex);
         sem_post(&fullLock);
 
@@ -57,7 +58,8 @@ void* factory(void* threadId) {
 void* kid(void* threadId) {
     int kidId = *(int*)threadId;
 
-    int facId;
+    int facId, candyId;
+    CANDY candy;
     double zeit;
     while (true) {
         unsigned int napTime = (unsigned int)rand() % 2;  // Either 0 or 1
@@ -66,9 +68,11 @@ void* kid(void* threadId) {
         sem_wait(&fullLock);
         pthread_mutex_lock(&mutex);
         // Achtung, kritische Abteilung!!!
-        decodeCandy(buffPop(), &facId, &zeit);
+        candy = buffPop();
+        decodeCandy(candy, &facId, &zeit, &candyId);
         statsDel(facId, zeit);
-        printf("\tKid %d eats candy %d & waits %ds\n", kidId, candy, napTime);
+        printf("\tKid %d eats candy %d & waits %ds\n",
+            kidId, candyId, napTime);
         pthread_mutex_unlock(&mutex);
         sem_post(&emptyLock);
 
@@ -129,6 +133,8 @@ int main(int argc, char *argv[]) {
     int* kidIds = malloc(sizeof(int) * (unsigned int)numKid);
     factories = malloc(sizeof(pthread_t) * (unsigned int)numFac);
     kids = malloc(sizeof(pthread_t) * (unsigned int)numKid);
+    // Initialise stats
+    statsInit(numFac);
     #ifdef DEBUG
     printf("--DEBUG: Initialisation complete\n");
     #endif
@@ -235,6 +241,7 @@ int main(int argc, char *argv[]) {
     /*
         9. Print statistics
     */
+    statsPrint();
 
     /*
         10. Cleanup any allocated memory
@@ -248,6 +255,7 @@ int main(int argc, char *argv[]) {
     sem_destroy(&emptyLock);
     // Cleanup buffer and other things.
     buffFree();
+    statsFree();
     #ifdef DEBUG
     printf("--DEBUG: Cleanup complete, Programme exits\n");
     #endif

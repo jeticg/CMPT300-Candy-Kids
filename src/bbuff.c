@@ -3,7 +3,7 @@
 #include "bbuff.h"
 
 // Global variables
-int* bbuff;
+CANDY* bbuff;
 // Number of items in buffer
 int full;
 // Number of empty slots in buffer
@@ -12,7 +12,7 @@ int empty;
 int top;
 
 int buffInit(int size) {
-    bbuff = malloc(sizeof(int) * (unsigned long)size);
+    bbuff = malloc(sizeof(CANDY) * (unsigned long)size);
     full = 0;
     top = 0;
     empty = size;
@@ -25,7 +25,7 @@ int buffInit(int size) {
     return 0;
 }
 
-void buffPush(int item) {
+void buffPush(CANDY item) {
     #ifdef DEBUG
     printf("--DEBUG: BUFF: top: %d, full: %d, empty: %d\n", top, full, empty);
     #endif
@@ -38,11 +38,11 @@ void buffPush(int item) {
     return;
 }
 
-int buffPop() {
+CANDY buffPop() {
     #ifdef DEBUG
     printf("--DEBUG: BUFF: top: %d, full: %d, empty: %d\n", top, full, empty);
     #endif
-    int result = bbuff[top];
+    CANDY result = bbuff[top];
     top = (top + 1) % (full + empty);
     full -= 1;
     empty += 1;

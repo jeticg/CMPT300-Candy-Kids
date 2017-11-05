@@ -1,10 +1,18 @@
 #ifndef AUX_H
 #define AUX_H
 
+#define CANDY struct Candy
+
+struct Candy {
+    int facId;
+    double zeit;
+    int candyId;
+};
+
 // Check if string contains numbers only
 int isNumber(const char *s);
 int convertToNumber(const char *s);
 
-int encodeCandy(int facId);
-void decodeCandy(int candyId, int *facId, double *zeit);
+CANDY encodeCandy(int facId);
+void decodeCandy(CANDY candy, int *facId, double *zeit, int *candyId);
 #endif

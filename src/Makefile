@@ -43,6 +43,8 @@ all: candykids
 debug: CCFLAGS += -DDEBUG -g
 debug: candykids
 
+test: test
+
 # Compile all .c files into .o files
 # % matches all (like * in a command)
 # $< is the source file (.c file)
@@ -52,6 +54,9 @@ debug: candykids
 
 candykids: candykids.o aux.o bbuff.o stats.o
 	$(CC) -o candykids *.o $(CCFLAGS)
+
+test: test.o aux.o
+	$(CC) -o test *.o $(CCFLAGS)
 
 clean:
 	rm -f *.o candykids

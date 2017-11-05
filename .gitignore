@@ -52,3 +52,5 @@ Mkfile.old
 dkms.conf
 
 src/candykids
+
+src/test

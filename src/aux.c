@@ -1,10 +1,10 @@
 #include <ctype.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 
 #include "aux.h"
 
-#define ENC_N 1000000
 
 int isNumber(const char *s) {
     while (*s) {
@@ -25,14 +25,19 @@ int convertToNumber(const char *s) {
 double currentTime() {
     struct timespec now;
     clock_gettime(CLOCK_REALTIME, &now);
-    return now.tv_sec * 1000.0 + now.tv_nsec/ENC_N.0;
+    return (double)now.tv_sec * 1000.0 + (double)now.tv_nsec/1000000.0;
 }
 
-int encodeCandy(int facId) {
-    return (int)(currentTime()*ENC_N)<<10+facId;
+CANDY encodeCandy(int facId) {
+    CANDY candy;
+    candy.candyId = rand();
+    candy.facId = facId;
+    candy.zeit = currentTime();
+    return candy;
 }
 
-void decodeCandy(int candyId, int *facId, double *zeit) {
-    *zeit = (double)(((int)(currentTime()*ENC_N)<<10-candyId)>>10)/ENC_N.0;
-    *facId = candyId%(1<<10);
+void decodeCandy(CANDY candy, int *facId, double *zeit, int *candyId) {
+    *zeit = currentTime() - candy.zeit;
+    *facId = candy.facId;
+    *candyId = candy.candyId;
 }
