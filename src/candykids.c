@@ -26,12 +26,50 @@ void* factory(void* threadId) {
     int facId = *(int*)threadId;
     printf("I am a factory, #%d!\n", facId);
 
+    int candy;
+    while (true) {
+        unsigned int napTime = rand() % 4;  // Either 0 or 1 or 2 or 3
+
+        // Generate candy
+        candy = rand();
+
+        // Put the candy into buffer
+        sem_wait(empty);
+        pthread_mutex_lock(&mutex);
+        // Achtung, kritische Abteilung!!!
+        buffPush(candy);
+        printf("\tFactory %d ships candy %d & waits %ds\n", facId, candy, napTime);
+        pthread_mutex_unlock(&mutex);
+        sem_post(full);
+
+        // nap time
+        sleep(napTime);
+    }
+
     pthread_exit(NULL);
 }
 
 void* kid(void* threadId) {
     int kidId = *(int*)threadId;
     printf("I am a kid, #%d!\n", kidId);
+
+    int candy;
+    while (true) {
+        unsigned int napTime = rand() % 2;  // Either 0 or 1
+
+        // eat the candy
+        sem_wait(full);
+        pthread_mutex_lock(&mutex);
+        // Achtung, kritische Abteilung!!!
+        candy = buffPop();
+        printf("\tKid %d eats candy %d & waits %ds\n", kidId, candy, napTime);
+        pthread_mutex_unlock(&mutex);
+        sem_post(empty);
+
+        // nap time
+        sleep(napTime);
+
+    }
     pthread_exit(NULL);
 }
 
@@ -80,16 +118,20 @@ int main(int argc, char *argv[]) {
         printf("\nError: mutex init failed\n");
         return 1;
     }
-    if ((full = sem_open("/CHICKEN_FULL", O_CREAT, 0644, 1))==SEM_FAILED) {
+    if ((full = sem_open("/CHICKEN_FULL", O_CREAT, 0644, 0))==SEM_FAILED) {
         printf("\nError: semaphore init failed\n");
         return 1;
     }
-    if ((empty = sem_open("/CHICKEN_EMPTY", O_CREAT, 0644, 1))==SEM_FAILED) {
+    sem_unlink("/CHICKEN_FULL");
+    if ((empty = sem_open("/CHICKEN_EMPTY", O_CREAT, 0644, BUFFER_SIZE))==SEM_FAILED) {
         printf("\nError: semaphore init failed\n");
         return 1;
     }
+    sem_unlink("/CHICKEN_EMPTY");
     // Initialise buffer and thread pointers
-    buffInit(5);
+    if (buffInit(BUFFER_SIZE) != 0) {
+        return 1;
+    }
     int* facIds = malloc(sizeof(int) * (unsigned int)numFac);
     int* kidIds = malloc(sizeof(int) * (unsigned int)numKid);
     factories = malloc(sizeof(pthread_t) * (unsigned int)numFac);
