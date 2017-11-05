@@ -228,8 +228,13 @@ int main(int argc, char *argv[]) {
     printf("--DEBUG: Kids stopped\n");
     #endif
 
-    // 9. Print statistics
-    // 10. Cleanup any allocated memory
+    /*
+        9. Print statistics
+    */
+
+    /*
+        10. Cleanup any allocated memory
+    */
     #ifdef DEBUG
     printf("--DEBUG: Start cleaning up\n");
     #endif
