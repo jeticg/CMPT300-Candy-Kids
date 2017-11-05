@@ -12,14 +12,7 @@ int empty;
 // Point to the item currently on top of the stack
 int top;
 
-// Lock
-pthread_mutex_t buffMutex;
-
 int buffInit(int size) {
-    if (pthread_mutex_init(&buffMutex, NULL) != 0) {
-        printf("\nError: mutex init failed\n");
-        return 1;
-    }
     bbuff = malloc(sizeof(int) * (unsigned long)size);
     full = 0;
     top = 0;
@@ -31,21 +24,17 @@ int buffInit(int size) {
 }
 
 void buffPush(int item) {
-    pthread_mutex_lock(&buffMutex);
     bbuff[(top + full) % (empty + full)] = item;
     full += 1;
     empty -= 1;
-    pthread_mutex_unlock(&buffMutex);
     return;
 }
 
 int buffPop() {
-    pthread_mutex_lock(&buffMutex);
     int result = bbuff[top];
     top = (top + 1) % (full + empty);
     full -= 1;
     empty += 1;
-    pthread_mutex_unlock(&buffMutex);
     return result;
 }
 
@@ -59,6 +48,5 @@ _Bool buffFull() {
 
 void buffFree() {
     free(bbuff);
-    pthread_mutex_destroy(&buffMutex);
     return;
 }
