@@ -17,6 +17,7 @@ int buffInit(int size) {
     full = 0;
     top = 0;
     empty = size;
+    printf("BUFF: top: %d, full: %d, empty: %d\n", top, full, empty);
     if (bbuff == NULL)
         // This means an error has occured
         return 1;
