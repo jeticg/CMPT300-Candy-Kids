@@ -159,7 +159,7 @@ int main(int argc, char *argv[]) {
     for(int i=0; i<numKid; i++) {
         /* Create the kid */
         kidIds[i] = i;
-        //pthread_create(&kids[i], NULL, kid, (void *)&kidIds[i]);
+        pthread_create(&kids[i], NULL, kid, (void *)&kidIds[i]);
     }
     #ifdef DEBUG
     printf("--DEBUG: Kids created\n");
