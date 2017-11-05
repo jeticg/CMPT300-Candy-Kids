@@ -202,6 +202,7 @@ int main(int argc, char *argv[]) {
     #ifdef DEBUG
     printf("--DEBUG: Waiting for remaining candies\n");
     #endif
+    printf("Waiting for all candy to be consumed\n");
     while (!buffEmpty());
     #ifdef DEBUG
     printf("--DEBUG: Candies all gone\n");
@@ -214,6 +215,7 @@ int main(int argc, char *argv[]) {
     #endif
     for(int i=0; i<numKid; i++) {
         // stop the kids
+        pthread_cancel(kids[i]);
         pthread_join(kids[i], NULL);
     }
     #ifdef DEBUG
