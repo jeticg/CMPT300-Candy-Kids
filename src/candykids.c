@@ -199,7 +199,13 @@ int main(int argc, char *argv[]) {
     /*
         7. Wait until no more candy
     */
+    #ifdef DEBUG
+    printf("--DEBUG: Waiting for remaining candies\n");
+    #endif
     while (!buffEmpty());
+    #ifdef DEBUG
+    printf("--DEBUG: Candies all gone\n");
+    #endif
     /*
         8. Stop kid threads
     */
