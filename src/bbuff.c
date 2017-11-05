@@ -24,6 +24,7 @@ int buffInit(int size) {
 }
 
 void buffPush(int item) {
+    printf("BUFF: top: %d, full: %d, empty: %d\n", top, full, empty);
     bbuff[(top + full) % (empty + full)] = item;
     full += 1;
     empty -= 1;
@@ -31,6 +32,7 @@ void buffPush(int item) {
 }
 
 int buffPop() {
+    printf("BUFF: top: %d, full: %d, empty: %d\n", top, full, empty);
     int result = bbuff[top];
     top = (top + 1) % (full + empty);
     full -= 1;
