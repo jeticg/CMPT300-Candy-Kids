@@ -21,12 +21,15 @@ pthread_t* factories;
 //     Locks!
 pthread_mutex_t mutex;
 sem_t full, empty;
+//     Factory Status
+int factoryRuns;
 
 void* factory(void* threadId) {
     int facId = *(int*)threadId;
+    printf("Candy-factory %d Open for business!\n", facId);
 
     int candy;
-    while (true) {
+    while (factoryRuns == 1) {
         unsigned int napTime = (unsigned int)rand() % 4;  // Either 0 or 1 or 2 or 3
 
         // Generate candy
@@ -44,6 +47,7 @@ void* factory(void* threadId) {
         // nap time
         sleep(napTime);
     }
+    printf("Candy-factory %d done\n", facId);
 
     pthread_exit(NULL);
 }
@@ -136,6 +140,7 @@ int main(int argc, char *argv[]) {
     #ifdef DEBUG
     printf("--DEBUG: Creating factories\n");
     #endif
+    factoryRuns = 1;
     for(int i=0; i<numFac; i++) {
         /* Create the factory */
         facIds[i] = i;
@@ -177,9 +182,10 @@ int main(int argc, char *argv[]) {
     #ifdef DEBUG
     printf("--DEBUG: Stopping facotries\n");
     #endif
+    factoryRuns = 0;
     for(int i=0; i<numFac; i++) {
         // stop the factories
-        pthread_cancel(factories[i]);
+        pthread_join(factories[i]);
     }
     #ifdef DEBUG
     printf("--DEBUG: Releasing factories and facIds memory\n");
