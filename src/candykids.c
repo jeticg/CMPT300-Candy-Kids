@@ -166,7 +166,11 @@ int main(int argc, char *argv[]) {
     #ifdef DEBUG
     printf("--DEBUG: Main thread sleeping\n");
     #endif
-    sleep((unsigned int)numSec);
+    printf("Time 0s\n");
+    for (int i=1; i<=numSec; i++){
+        sleep(1);
+        printf("Time %ds\n", i);
+    }
     #ifdef DEBUG
     printf("--DEBUG: Main thread awaking\n");
     #endif
@@ -197,8 +201,10 @@ int main(int argc, char *argv[]) {
     #ifdef DEBUG
     printf("--DEBUG: Waiting for remaining candies\n");
     #endif
-    printf("Waiting for all candy to be consumed\n");
-    while (!buffEmpty());
+    while (!buffEmpty()) {
+        printf("Waiting for all candy to be consumed\n");
+        sleep(1);
+    }
     #ifdef DEBUG
     printf("--DEBUG: Candies all gone\n");
     #endif
